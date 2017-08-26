@@ -2,7 +2,7 @@
   "name": "smoothscroll-module",
   "version": "1.0.0",
   "description": "",
-  "main": "dest/smoothscroll-module.js",
+  "main": "src/smoothscroll-module.js",
   "scripts": {
     "build": "gulp",
     "watch": "gulp watch",
