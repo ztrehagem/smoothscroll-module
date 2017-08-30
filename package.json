@@ -2,7 +2,7 @@
   "name": "smoothscroll-module",
   "version": "1.0.0",
   "description": "",
-  "main": "src/smoothscroll-module.js",
+  "main": "dest/smoothscroll-module.js",
   "scripts": {
     "build": "gulp",
     "watch": "gulp watch",
@@ -19,21 +19,12 @@
   },
   "homepage": "https://github.com/ztrehagem/smoothscroll-module#readme",
   "devDependencies": {
-    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-es2016": "^6.24.1",
     "babel-preset-es2017": "^6.24.1",
-    "babelify": "^7.3.0",
-    "browserify": "^14.4.0",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
-    "gulp-nop": "0.0.3",
-    "gulp-plumber": "^1.1.0",
-    "gulp-sourcemaps": "^2.6.0",
-    "gulp-uglify": "^3.0.0",
-    "uglify": "^0.1.5",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.9.0"
+    "gulp-babel": "^7.0.0",
+    "gulp-plumber": "^1.1.0"
   }
 }

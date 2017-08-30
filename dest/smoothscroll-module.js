@@ -1,2 +1,109 @@
-!function t(o,e,r){function n(l,c){if(!e[l]){if(!o[l]){var f="function"==typeof require&&require;if(!c&&f)return f(l,!0);if(i)return i(l,!0);var u=new Error("Cannot find module '"+l+"'");throw u.code="MODULE_NOT_FOUND",u}var a=e[l]={exports:{}};o[l][0].call(a.exports,function(t){var e=o[l][1][t];return n(e||t)},a,a.exports,t,o,e,r)}return e[l].exports}for(var i="function"==typeof require&&require,l=0;l<r.length;l++)n(r[l]);return n}({1:[function(t,o,e){"use strict";function r(t){return.5*(1-Math.cos(Math.PI*t))}function n(t){var o=t.$el,e=t.method,i=t.startX,l=t.startY,c=t.x,f=t.y,a=t.startTime,d=t.delay,s=u(),w=r(Math.min(1,(s-a)/d)),p=i+(c-i)*w,m=l+(f-l)*w;e.call(o,p,m),p===c&&m===f||window.requestAnimationFrame(function(){return n(t)})}function i(t,o){this.scrollLeft=t,this.scrollTop=o}function l(t,o,e,r){var l={x:o,y:e,startTime:u(),delay:r};t===document.body?(l.$el=window,l.method=window.scroll||window.scrollTo,l.startX=window.scrollX||window.pageXOffset,l.startY=window.scrollY||window.pageYOffset):(l.$el=t,l.method=i,l.startX=t.scrollLeft,l.startY=t.scrollTop),n(l)}function c(t,o){var e=t.top,r=t.left,n=Math.floor(r)+(window.scrollX||window.pageXOffset),i=Math.floor(e)+(window.scrollY||window.pageYOffset);l(document.body,n,i,o)}function f(t){for(;;){if((t=t.parentNode)===document.body)break;if(!(t.clientHeight>t.scrollHeight&&t.clientWidth>t.scrollWidth)&&"visible"!==window.getComputedStyle(t,null).overflow)break}return t}Object.defineProperty(e,"__esModule",{value:!0}),e.smoothScrollTo=function(t){var o=arguments.length>1&&void 0!==arguments[1]?arguments[1]:468;"string"==typeof t&&(t=document.querySelector(t));var e=f(t),r=e.getBoundingClientRect(),n=t.getBoundingClientRect();e===document.body?c(n,o):(l(e,e.scrollLeft+n.left-r.left,e.scrollTop+n.top-r.top,o),c(r,o))};var u=window.performance&&window.performance.now?function(){return window.performance.now()}:function(){return Date.now()}},{}]},{},[1]);
-//# sourceMappingURL=smoothscroll-module.js.map
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.smoothScrollTo = smoothScrollTo;
+var now = function () {
+  if (window.performance && window.performance.now) {
+    return function () {
+      return window.performance.now();
+    };
+  } else {
+    return function () {
+      return Date.now();
+    };
+  }
+}();
+
+function ease(k) {
+  return 0.5 * (1 - Math.cos(Math.PI * k));
+}
+
+function animationFrame(ctx) {
+  var $el = ctx.$el,
+      method = ctx.method,
+      startX = ctx.startX,
+      startY = ctx.startY,
+      x = ctx.x,
+      y = ctx.y,
+      startTime = ctx.startTime,
+      delay = ctx.delay;
+
+  var time = now();
+  var elapsed = Math.min(1, (time - startTime) / delay);
+  var progress = ease(elapsed);
+  var currentX = startX + (x - startX) * progress;
+  var currentY = startY + (y - startY) * progress;
+
+  method.call($el, currentX, currentY);
+
+  if (currentX !== x || currentY !== y) {
+    window.requestAnimationFrame(function () {
+      return animationFrame(ctx);
+    });
+  }
+}
+
+function scrollElement(x, y) {
+  this.scrollLeft = x;
+  this.scrollTop = y;
+}
+
+function smoothScroll($el, x, y, delay) {
+  var ctx = { x: x, y: y, startTime: now(), delay: delay };
+
+  if ($el === document.body) {
+    ctx.$el = window;
+    ctx.method = window.scroll || window.scrollTo;
+    ctx.startX = window.scrollX || window.pageXOffset;
+    ctx.startY = window.scrollY || window.pageYOffset;
+  } else {
+    ctx.$el = $el;
+    ctx.method = scrollElement;
+    ctx.startX = $el.scrollLeft;
+    ctx.startY = $el.scrollTop;
+  }
+
+  animationFrame(ctx);
+};
+
+function scrollBy(_ref, delay) {
+  var top = _ref.top,
+      left = _ref.left;
+
+  var x = Math.floor(left) + (window.scrollX || window.pageXOffset);
+  var y = Math.floor(top) + (window.scrollY || window.pageYOffset);
+  smoothScroll(document.body, x, y, delay);
+};
+
+function findScrollableParent($el) {
+  while (true) {
+    $el = $el.parentNode;
+    if ($el === document.body) break;
+    if ($el.clientHeight > $el.scrollHeight && $el.clientWidth > $el.scrollWidth) continue;
+    if (window.getComputedStyle($el, null).overflow !== 'visible') break;
+  }
+  return $el;
+};
+
+function smoothScrollTo($el) {
+  var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 468;
+
+  if (typeof $el == 'string') {
+    $el = document.querySelector($el);
+  }
+
+  var $scrollable = findScrollableParent($el);
+  var parentRects = $scrollable.getBoundingClientRect();
+  var clientRects = $el.getBoundingClientRect();
+
+  if ($scrollable === document.body) {
+    scrollBy(clientRects, delay);
+  } else {
+    var x = $scrollable.scrollLeft + clientRects.left - parentRects.left;
+    var y = $scrollable.scrollTop + clientRects.top - parentRects.top;
+    smoothScroll($scrollable, x, y, delay);
+    scrollBy(parentRects, delay);
+  }
+};
